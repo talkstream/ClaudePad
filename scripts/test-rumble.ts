@@ -1,7 +1,9 @@
 #!/usr/bin/env tsx
 // Test all haptic patterns sequentially
 
-import { createController } from "sdl2-gamecontroller";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const { createController } = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
 import { HAPTIC_PATTERNS } from "../src/haptic/patterns.js";
 
 function sleep(ms: number): Promise<void> {

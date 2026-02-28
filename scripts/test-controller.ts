@@ -1,7 +1,9 @@
 #!/usr/bin/env tsx
 // Phase 0: Smoke test — verify Xbox BLE controller is detected by SDL2
 
-import { createController } from "sdl2-gamecontroller";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const { createController } = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
 
 console.log("ClaudePad Controller Test");
 console.log("========================");

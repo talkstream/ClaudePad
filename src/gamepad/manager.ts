@@ -1,13 +1,15 @@
 import { EventEmitter } from "node:events";
-import { createController } from "sdl2-gamecontroller";
+import { createRequire } from "node:module";
 import type {
   Gamecontroller,
-  ButtonType,
   AxisType,
   ButtonPress,
   AxisMotionData,
   DeviceAdded,
 } from "sdl2-gamecontroller";
+
+const require = createRequire(import.meta.url);
+const { createController } = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
 import { logger } from "../utils/logger.js";
 import {
   ALL_BUTTONS,
