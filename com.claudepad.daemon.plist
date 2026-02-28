@@ -24,6 +24,8 @@
     <dict>
         <key>PATH</key>
         <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+        <key>SDL_VIDEODRIVER</key>
+        <string>dummy</string>
     </dict>
 </dict>
 </plist>

@@ -8,8 +8,20 @@ import type {
   DeviceAdded,
 } from "sdl2-gamecontroller";
 
+// SDL2 on macOS requires a video driver; dummy driver works for headless CLI
+process.env.SDL_VIDEODRIVER ??= "dummy";
+
+// Redirect console.log before loading sdl2-gamecontroller
+// because the module creates a default controller at load time and logs to stdout
+const _origConsoleLog = console.log;
+console.log = (...args: unknown[]) =>
+  process.stderr.write(`[sdl2] ${args.map(String).join(" ")}\n`);
+
 const require = createRequire(import.meta.url);
-const { createController } = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
+const sdl2Module = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
+
+console.log = _origConsoleLog;
+
 import { logger } from "../utils/logger.js";
 import {
   ALL_BUTTONS,
@@ -61,17 +73,13 @@ export class GamepadManager extends EventEmitter {
   start(): void {
     if (this.controller) return;
 
-    // Redirect console.log to stderr during controller creation
-    // because sdl2-gamecontroller logs to stdout which breaks MCP JSON-RPC
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logger.debug("sdl2:", ...args);
-
-    this.controller = createController({ fps: 60 });
-
-    console.log = origLog;
+    // Use the default controller — sdl2-gamecontroller creates one at module load
+    // and starts polling. Creating a second one causes SDL_PollEvent race conditions
+    // (events are consumed by whichever instance polls first).
+    this.controller = sdl2Module.default;
 
     this.setupEventListeners();
-    logger.log("GamepadManager started, polling at 60fps");
+    logger.log("GamepadManager started (using default SDL2 controller, polling at ~30fps)");
   }
 
   stop(): void {

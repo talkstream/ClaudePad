@@ -1,24 +1,29 @@
 #!/usr/bin/env tsx
 // Phase 0: Smoke test — verify Xbox BLE controller is detected by SDL2
 
+// SDL2 requires a video driver on macOS; dummy driver works headless
+process.env.SDL_VIDEODRIVER ??= "dummy";
+
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const { createController } = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
+const sdl2 = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
+
+// Use the default controller — it's created at module load and owns the SDL event loop.
+// Creating a second one via createController() causes event race conditions.
+const controller = sdl2.default;
 
 console.log("ClaudePad Controller Test");
 console.log("========================");
 console.log("Waiting for controller connection...");
 console.log("Press Ctrl+C to exit\n");
 
-const controller = createController({ fps: 30 });
-
-controller.on("sdl-init", (data) => {
+controller.on("sdl-init", (data: any) => {
   console.log(
     `SDL2 initialized (compiled: ${data.compiled_against_SDL_version}, linked: ${data.linked_against_SDL_version})`,
   );
 });
 
-controller.on("controller-device-added", (data) => {
+controller.on("controller-device-added", (data: any) => {
   console.log("\n--- Controller Connected ---");
   console.log(`  Name:          ${data.name}`);
   console.log(`  Player:        ${data.player}`);
@@ -34,25 +39,23 @@ controller.on("controller-device-removed", () => {
   console.log("\n--- Controller Disconnected ---");
 });
 
-controller.on("controller-button-down", (data) => {
+controller.on("controller-button-down", (data: any) => {
   console.log(`Button DOWN: ${data.button} (player ${data.player})`);
-  // Send a short rumble on every button press
   controller.rumble(40000, 20000, 150, data.player);
 });
 
-controller.on("controller-button-up", (data) => {
+controller.on("controller-button-up", (data: any) => {
   console.log(`Button UP:   ${data.button} (player ${data.player})`);
 });
 
-controller.on("error", (data) => {
+controller.on("error", (data: any) => {
   console.error(`ERROR: ${data.message} (${data.operation})`);
 });
 
-controller.on("warning", (data) => {
+controller.on("warning", (data: any) => {
   console.warn(`WARN: ${data.message} (${data.operation})`);
 });
 
-// Keep process alive
 process.on("SIGINT", () => {
   console.log("\nExiting...");
   process.exit(0);

@@ -1,9 +1,12 @@
 #!/usr/bin/env tsx
 // Test all haptic patterns sequentially
 
+process.env.SDL_VIDEODRIVER ??= "dummy";
+
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
-const { createController } = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
+const sdl2 = require("sdl2-gamecontroller") as typeof import("sdl2-gamecontroller");
+
 import { HAPTIC_PATTERNS } from "../src/haptic/patterns.js";
 
 function sleep(ms: number): Promise<void> {
@@ -14,9 +17,9 @@ console.log("ClaudePad Rumble Test");
 console.log("====================");
 console.log("Connect controller and wait...\n");
 
-const controller = createController({ fps: 30 });
+const controller = sdl2.default;
 
-controller.on("controller-device-added", async (data) => {
+controller.on("controller-device-added", async (data: any) => {
   console.log(`Controller: ${data.name}`);
   console.log(`Rumble supported: ${data.has_rumble}\n`);
 
@@ -33,11 +36,10 @@ controller.on("controller-device-added", async (data) => {
   process.exit(0);
 });
 
-controller.on("error", (data) => {
+controller.on("error", (data: any) => {
   console.error(`ERROR: ${data.message}`);
 });
 
-// Timeout if no controller connects
 setTimeout(() => {
   console.error("No controller connected after 10s");
   process.exit(1);
