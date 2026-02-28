@@ -1,0 +1,37 @@
+{
+  "name": "claudepad",
+  "version": "0.1.0",
+  "description": "Xbox Gamepad MCP Server for Claude Code — approve tools with A, deny with B, haptic feedback, fighting game combos",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:controller": "tsx scripts/test-controller.ts",
+    "test:rumble": "tsx scripts/test-rumble.ts",
+    "test:keystroke": "tsx scripts/test-keystroke.ts"
+  },
+  "keywords": [
+    "mcp",
+    "gamepad",
+    "xbox",
+    "claude",
+    "controller",
+    "haptic"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "sdl2-gamecontroller": "^1.1.2",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

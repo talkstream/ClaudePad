@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "claudepad": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "src/index.ts"],
+      "cwd": "/Users/nafigator/Projects/ClaudePad"
+    }
+  }
+}
