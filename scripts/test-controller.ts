@@ -48,6 +48,18 @@ controller.on("controller-button-up", (data: any) => {
   console.log(`Button UP:   ${data.button} (player ${data.player})`);
 });
 
+// Axis events: sticks and triggers
+// Deadzone filter to avoid flooding with tiny stick drift
+const AXIS_DEADZONE = 3000;
+const axisNames = ["leftx", "lefty", "rightx", "righty", "lefttrigger", "righttrigger"];
+for (const axis of axisNames) {
+  controller.on(axis, (data: any) => {
+    if (Math.abs(data.value) > AXIS_DEADZONE) {
+      console.log(`Axis ${data.button.padEnd(13)}: ${data.value.toString().padStart(6)}`);
+    }
+  });
+}
+
 controller.on("error", (data: any) => {
   console.error(`ERROR: ${data.message} (${data.operation})`);
 });

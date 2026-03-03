@@ -6,15 +6,18 @@ import { logger } from "../utils/logger.js";
 
 const execFileAsync = promisify(execFile);
 
-// Map of special key names to AppleScript key codes
-const KEY_CODE_MAP: Record<string, string> = {
-  Enter: "return",
-  Escape: "escape",
-  Tab: "tab",
-  Up: "up arrow",
-  Down: "down arrow",
-  Left: "left arrow",
-  Right: "right arrow",
+// macOS virtual key codes for special keys
+// See: https://developer.apple.com/documentation/carbon/kVK_Return etc.
+const KEY_CODE_MAP: Record<string, number> = {
+  Enter: 36,
+  Escape: 53,
+  Tab: 48,
+  Up: 126,
+  Down: 125,
+  Left: 123,
+  Right: 124,
+  PPage: 116, // Page Up
+  NPage: 121, // Page Down
 };
 
 export class OsascriptInjector implements KeystrokeInjector {
@@ -35,26 +38,36 @@ export class OsascriptInjector implements KeystrokeInjector {
       return;
     }
 
-    // Handle special keys
-    const mapped = KEY_CODE_MAP[keys];
-    if (mapped) {
-      const script = `tell application "System Events" to keystroke ${mapped}`;
-      logger.debug(`osascript: ${script}`);
+    // Handle special keys via key codes (layout-independent)
+    const keyCode = KEY_CODE_MAP[keys];
+    if (keyCode !== undefined) {
+      const script = `tell application "System Events" to key code ${keyCode}`;
+      logger.debug(`osascript: key code ${keyCode} (${keys})`);
       await execFileAsync("osascript", ["-e", script]);
       return;
     }
 
-    // Regular character
+    // Single character: use keystroke with "using" option for layout-independence
+    // For simple ASCII characters like 'y' or 'n', keystroke works fine
     const script = `tell application "System Events" to keystroke "${keys}"`;
     logger.debug(`osascript: ${script}`);
     await execFileAsync("osascript", ["-e", script]);
   }
 
   async sendText(text: string): Promise<void> {
-    // Escape double quotes in text
-    const escaped = text.replace(/"/g, '\\"');
-    const script = `tell application "System Events" to keystroke "${escaped}"`;
-    logger.debug(`osascript: ${script}`);
+    // Use clipboard-based injection to avoid keyboard layout issues.
+    // "keystroke" sends physical key positions, so "hello" becomes "фддд" on Russian layout.
+    // Instead: save clipboard → set clipboard to text → Cmd+V → restore clipboard.
+    logger.debug(`osascript: paste text via clipboard (${text.length} chars)`);
+
+    const script = [
+      'set savedClip to the clipboard',
+      `set the clipboard to "${text.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`,
+      'tell application "System Events" to keystroke "v" using command down',
+      'delay 0.1',
+      'set the clipboard to savedClip',
+    ].join("\n");
+
     await execFileAsync("osascript", ["-e", script]);
   }
 }
