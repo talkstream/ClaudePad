@@ -34,9 +34,13 @@ This skill uses the ClaudePad MCP server tools:
 | X (blue) | Ctrl+C | Interrupt |
 | Y (yellow) | Escape | Skip |
 | LB/RB | Scroll | Page up/down in tmux |
-| D-pad Up/Down | Arrows | Navigate |
+| D-pad Up/Down | Arrows | Navigate up/down |
+| D-pad Left/Right | Arrows | Navigate left/right |
 | Menu | Enter | Confirm |
 | View | Ctrl+C | Interrupt |
+| Guide (Xbox) | /voice + Enter | Toggle voice input |
+| L3 (left stick) | Tab | Autocomplete |
+| R3 (right stick) | / + Enter | Slash command menu |
 
 ## Combo Sequences
 

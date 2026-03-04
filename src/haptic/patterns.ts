@@ -54,6 +54,11 @@ export const HAPTIC_PATTERNS: Record<string, HapticPattern> = {
     steps: [{ low: 65000, high: 65000, duration: 50, pause: 0 }],
   },
 
+  voice_start: {
+    name: "voice_start",
+    steps: [{ low: 12000, high: 8000, duration: 80, pause: 0 }],
+  },
+
   rainbow: {
     name: "rainbow",
     steps: [

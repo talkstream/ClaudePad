@@ -1,139 +1,126 @@
 # ClaudePad
 
-Xbox Gamepad MCP Server for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — approve tool calls with **A**, deny with **B**, get haptic feedback, and unleash fighting game combos.
+> *"Coding never changes. But your input device just did."*
 
-## What is this?
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![MCP](https://img.shields.io/badge/MCP-Model_Context_Protocol-blueviolet)](https://modelcontextprotocol.io/)
+[![Xbox Controller](https://img.shields.io/badge/Xbox-Wireless_Controller-107C10?logo=xbox&logoColor=white)](https://www.xbox.com/)
+[![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)](https://www.apple.com/macos/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/claudepad)](https://www.npmjs.com/package/claudepad)
 
-ClaudePad connects your Xbox Wireless Controller (Bluetooth) to Claude Code CLI as an alternative input device. Think of it as a couch-friendly way to interact with your AI coding assistant.
+**Vibe-code from your couch.** Connect your Xbox Wireless Controller to [Claude Code](https://docs.anthropic.com/en/docs/claude-code) via MCP. Approve with **A**, deny with **B**, interrupt with **X**. Execute fighting game combos to commit+push. Feel haptic feedback when Claude finishes thinking.
 
-**Key features:**
-- **Button-to-action mapping** — A = approve, B = deny, X = interrupt, Y = skip
-- **Haptic feedback** — feel when tasks complete, errors occur, or combos activate
-- **Fighting game combos** — Hadouken (↓→A) to commit+push, Konami Code for easter eggs
-- **MCP integration** — Claude can read controller state, wait for input, trigger rumble
-- **Daemon mode** — always-on button mapping without MCP, with launchd auto-start
+## Install
 
-## Requirements
+### Prerequisites
 
-- macOS (Apple Silicon or Intel)
-- Xbox Wireless Controller (Bluetooth)
-- [SDL2](https://www.libsdl.org/) 2.0.16+
-- Node.js 18+
-- [tmux](https://github.com/tmux/tmux) (primary) or macOS Accessibility (fallback) for keystroke injection
-
-### Install prerequisites
+macOS + SDL2:
 
 ```sh
 brew install cmake sdl2
 ```
 
-## Quick Start
+### Add to Claude Code (one-liner)
 
 ```sh
-git clone https://github.com/nafigator/ClaudePad.git
-cd ClaudePad
-npm install
+claude mcp add claudepad -- npx -y claudepad
 ```
 
-### 1. Smoke test (verify controller detection)
+That's it. Restart Claude Code and connect your Xbox controller via Bluetooth.
+
+### Verify controller
 
 ```sh
-npx tsx scripts/test-controller.ts
+npx claudepad-test
 ```
 
-Press buttons on your Xbox controller — you should see button names printed and feel a short rumble on each press.
+## Button Map
 
-### 2. Test haptic patterns
+| Button | Action | Description |
+|--------|--------|-------------|
+| **A** (green) | Approve | `y` + Enter |
+| **B** (red) | Deny | `n` + Enter |
+| **X** (blue) | Interrupt | Ctrl+C |
+| **Y** (yellow) | Skip | Escape |
+| **LB** | Scroll Up | tmux page up |
+| **RB** | Scroll Down | tmux page down |
+| **D-pad** | Navigate | Arrow keys |
+| **Menu** | Confirm | Enter |
+| **View** | Interrupt | Ctrl+C |
+| **Xbox** | Voice Input | `/voice` + Enter |
+| **L3** | Autocomplete | Tab |
+| **R3** | Slash Commands | `/` |
 
-```sh
-npx tsx scripts/test-rumble.ts
+## Combos
+
+Fighting game input sequences trigger special actions:
+
+| Combo | Sequence | Window | Action |
+|-------|----------|--------|--------|
+| **Hadouken** | Down, Right, A | 500ms | `git commit` + `push` |
+| **Shoryuken** | Right, Down, Right, B | 600ms | Reset conversation |
+| **Quick Approve** | A, A | 300ms | Double approve |
+| **Turbo Mode** | LB + RB | 200ms | Toggle turbo |
+| **Konami Code** | Up Up Down Down Left Right Left Right B A | 3s | Rainbow rumble |
+
+## Haptic Feedback
+
+Your controller vibrates to communicate state — no need to look at the screen.
+
+| Pattern | Feel | When |
+|---------|------|------|
+| `success` | Gentle double pulse | Task completed |
+| `error` | Hard long buzz | Something broke |
+| `warning` | Medium single pulse | Heads up |
+| `approval_prompt` | Triple tap rhythm | Claude needs input |
+| `task_complete` | Rising crescendo | Major milestone |
+| `combo_activated` | Sharp snap | Combo detected |
+| `voice_start` | Light click | Voice recording started |
+| `rainbow` | Wave crescendo | Easter egg activated |
+
+## Architecture
+
+```
+Xbox Controller --Bluetooth--> macOS SDL2 --> GamepadManager
+                                                  |
+                                        +---------+---------+
+                                        |                   |
+                                   ButtonMapper       ComboDetector
+                                        |
+                                  KeystrokeInjector
+                                   (tmux / osascript)
+                                        |
+                                    Claude Code
 ```
 
-### 3. Test keystroke injection
+## MCP Tools
 
-Inside a tmux session:
-```sh
-npx tsx scripts/test-keystroke.ts
-```
+When running as an MCP server, Claude gains access to:
 
-### 4. Run as MCP server (with Claude Code)
+| Tool | Description |
+|------|-------------|
+| `gamepad_get_state` | Read button/axis/connection state |
+| `gamepad_wait_button` | Block until a specific button press |
+| `gamepad_get_analog` | Read analog stick and trigger values |
+| `gamepad_rumble` | Send haptic feedback (preset or custom) |
+| `gamepad_wait_combo` | Wait for a combo input |
+| `gamepad_configure_mapping` | View or update button mappings |
 
-Add to your Claude Code project's `.mcp.json`:
+## Daemon Mode
 
-```json
-{
-  "mcpServers": {
-    "claudepad": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["tsx", "src/index.ts"],
-      "cwd": "/path/to/ClaudePad"
-    }
-  }
-}
-```
-
-Then start Claude Code — the `claudepad` MCP server will be available.
-
-### 5. Daemon mode (standalone)
+Run standalone (no MCP, just keystrokes):
 
 ```sh
 npx tsx src/daemon.ts
 ```
 
-Or install as a launchd service:
+Or install as a persistent launchd service:
+
 ```sh
 cp com.claudepad.daemon.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.claudepad.daemon.plist
 ```
-
-## MCP Tools
-
-| Tool | Description |
-|------|-------------|
-| `gamepad_get_state` | Get current button/axis/connection state |
-| `gamepad_wait_button` | Block until a specific button is pressed |
-| `gamepad_get_analog` | Read analog stick and trigger values |
-| `gamepad_rumble` | Send haptic feedback with preset or custom patterns |
-| `gamepad_wait_combo` | Wait for a fighting game combo input |
-| `gamepad_configure_mapping` | View or update button-to-action mappings |
-
-## Button Mapping
-
-| Button | Action | Description |
-|--------|--------|-------------|
-| **A** (green) | `y` + Enter | Approve tool call |
-| **B** (red) | `n` + Enter | Deny tool call |
-| **X** (blue) | Ctrl+C | Interrupt |
-| **Y** (yellow) | Escape | Skip |
-| **LB / RB** | Page Up/Down | Scroll in tmux |
-| **D-pad ↑↓** | Arrow keys | Navigate |
-| **Menu** | Enter | Confirm |
-| **View** | Ctrl+C | Interrupt |
-
-## Combo System
-
-Inspired by fighting games — input sequences within a time window trigger special actions.
-
-| Combo | Input | Window | Action | Level |
-|-------|-------|--------|--------|-------|
-| Quick Approve | A, A | 300ms | Fast approve | Novice |
-| Turbo Mode | LB + RB | 200ms | Toggle auto-approve | Advanced |
-| Hadouken | ↓ → A | 500ms | Commit + push | Master |
-| Shoryuken | → ↓ → B | 600ms | Reset conversation | Master |
-| Konami Code | ↑↑↓↓←→←→BA | 3s | Rainbow rumble | Master |
-
-## Haptic Patterns
-
-| Pattern | Feel | Use case |
-|---------|------|----------|
-| `success` | Gentle double pulse | Task completed |
-| `error` | Hard long buzz | Error occurred |
-| `warning` | Medium single pulse | Warning |
-| `approval_prompt` | Triple tap rhythm | Waiting for approval |
-| `task_complete` | Rising crescendo | Major milestone |
-| `combo_activated` | Sharp snap | Combo detected |
-| `rainbow` | Wave crescendo | Easter egg |
 
 ## Development
 
@@ -143,48 +130,14 @@ npm run test:watch    # Watch mode
 npm run dev           # Dev mode with file watching
 ```
 
-## Project Structure
-
-```
-src/
-├── index.ts              # MCP server entry point
-├── daemon.ts             # Daemon mode entry point
-├── mcp/
-│   ├── server.ts         # MCP server setup
-│   ├── tools/            # MCP tool handlers
-│   └── resources/        # MCP resource providers
-├── gamepad/
-│   ├── manager.ts        # GamepadManager singleton
-│   ├── combo-detector.ts # Fighting game combo system
-│   ├── input-buffer.ts   # Circular input buffer
-│   └── types.ts          # Type definitions
-├── injector/
-│   ├── keystroke-injector.ts  # Strategy interface
-│   ├── tmux-injector.ts       # tmux send-keys
-│   └── osascript-injector.ts  # macOS AppleScript
-├── haptic/
-│   ├── feedback-engine.ts # Haptic playback engine
-│   └── patterns.ts        # Preset vibration patterns
-├── config/
-│   ├── button-mapper.ts   # Button → action mapping
-│   ├── defaults.ts        # Default mappings
-│   └── loader.ts          # Config file loader
-├── daemon/
-│   └── controller.ts      # Daemon mode controller
-└── utils/
-    ├── logger.ts          # stderr logger (MCP-safe)
-    └── terminal-detect.ts # tmux/accessibility detection
-```
-
 ## Tech Stack
 
-- **TypeScript** + **tsx** runtime
-- **@modelcontextprotocol/sdk** — MCP server (stdio transport)
-- **sdl2-gamecontroller** — SDL2 gamepad + rumble via native addon
-- **zod** — MCP tool input validation
-- **vitest** — testing
-- **tmux** — keystroke injection (primary)
+**TypeScript** + **tsx** | **@modelcontextprotocol/sdk** | **sdl2-gamecontroller** (SDL2 native addon) | **zod** | **vitest** | **tmux**
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT
+[MIT](LICENSE)

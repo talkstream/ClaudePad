@@ -1,0 +1,14 @@
+{
+  "name": "claudepad",
+  "version": "0.2.0",
+  "description": "Xbox Gamepad controller for Claude Code — approve tools with A, deny with B, haptic feedback, fighting game combos",
+  "author": {
+    "name": "talkstream",
+    "url": "https://github.com/talkstream"
+  },
+  "repository": "https://github.com/talkstream/ClaudePad",
+  "homepage": "https://talkstream.github.io/ClaudePad",
+  "license": "MIT",
+  "keywords": ["gamepad", "xbox", "controller", "haptic", "mcp", "vibe-coding"],
+  "mcpServers": "./.mcp.json"
+}

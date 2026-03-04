@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>
+(function(){
+  var s=localStorage.getItem('claudepad-theme');
+  var p=s||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');
+  document.documentElement.setAttribute('data-theme',p);
+})();
+</script>
+<title>ClaudePad — Xbox Gamepad for Claude Code</title>
+<meta name="description" content="Vibe-code from your couch. Connect your Xbox Wireless Controller to Claude Code via MCP.">
+<meta name="keywords" content="ClaudePad,Xbox,gamepad,controller,Claude Code,MCP,Model Context Protocol,vibe coding,TypeScript">
+<meta name="author" content="talkstream">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://talkstream.github.io/ClaudePad/">
+<meta name="theme-color" content="#0a0a12" media="(prefers-color-scheme:dark)">
+<meta name="theme-color" content="#f8f8fa" media="(prefers-color-scheme:light)">
+
+<meta property="og:title" content="ClaudePad — Xbox Gamepad for Claude Code">
+<meta property="og:description" content="Vibe-code from your couch. Connect your Xbox Wireless Controller to Claude Code via MCP.">
+<meta property="og:image" content="https://talkstream.github.io/ClaudePad/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta property="og:url" content="https://talkstream.github.io/ClaudePad/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ClaudePad">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ClaudePad — Xbox Gamepad for Claude Code">
+<meta name="twitter:description" content="Vibe-code from your couch. Connect your Xbox Wireless Controller to Claude Code via MCP.">
+<meta name="twitter:image" content="https://talkstream.github.io/ClaudePad/og-image.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><style>@media(prefers-color-scheme:light){.bg{fill:%23333}}</style><rect class='bg' width='64' height='64' rx='12' fill='%23e8e8f0' opacity='0'/><path d='M12 28c0-6 4-12 10-14s8 0 10 2 4-2 10-2 10 8 10 14-2 18-8 20-6-4-12-4-6 6-12 4S12 34 12 28z' fill='%2316162a' stroke='%23107C10' stroke-width='2'/><circle cx='24' cy='26' r='5' fill='none' stroke='%23555' stroke-width='1.5'/><circle cx='42' cy='30' r='2' fill='%23107C10'/><circle cx='46' cy='26' r='2' fill='%23e74c3c'/><circle cx='38' cy='26' r='2' fill='%230078d4'/><circle cx='42' cy='22' r='2' fill='%23f1c40f'/><rect x='29' y='28' width='6' height='3' rx='1.5' fill='%23107C10' opacity='.7'/></svg>">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"SoftwareApplication",
+  "name":"ClaudePad",
+  "description":"Xbox Gamepad plugin for Claude Code — approve, deny, combos, haptic feedback",
+  "applicationCategory":"DeveloperApplication",
+  "operatingSystem":"macOS",
+  "url":"https://talkstream.github.io/ClaudePad/",
+  "codeRepository":"https://github.com/talkstream/ClaudePad",
+  "programmingLanguage":"TypeScript",
+  "license":"https://opensource.org/licenses/MIT",
+  "author":{"@type":"Organization","name":"talkstream","url":"https://github.com/talkstream"},
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+}
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root,[data-theme="dark"]{
+  --bg-primary:#0a0a12;--bg-secondary:#12121f;--bg-card:#16162a;--bg-card-hover:#1c1c36;
+  --text-primary:#e8e8f0;--text-secondary:#a0a0b8;--text-muted:#6a6a82;
+  --accent-green:#107C10;--accent-cyan:#00d4ff;--accent-purple:#8b5cf6;
+  --accent-red:#e74c3c;--accent-blue:#0078d4;--accent-yellow:#f1c40f;
+  --border-color:#2a2a44;--border-glow:rgba(0,212,255,.15);
+  --code-bg:#0d0d1a;--nav-bg:rgba(10,10,18,.85);
+  --shadow-card:0 4px 24px rgba(0,0,0,.4);--shadow-glow:0 0 20px rgba(0,212,255,.1);
+  --kbd-bg:#1e1e34;--kbd-border:#3a3a54;
+  --grid-color:rgba(0,212,255,.04);
+  color-scheme:dark;
+}
+[data-theme="light"]{
+  --bg-primary:#f8f8fa;--bg-secondary:#eeeef2;--bg-card:#ffffff;--bg-card-hover:#f0f0f6;
+  --text-primary:#1a1a2e;--text-secondary:#4a4a6a;--text-muted:#8a8aa0;
+  --border-color:#d8d8e4;--border-glow:rgba(0,0,0,.06);
+  --code-bg:#f0f0f4;--nav-bg:rgba(248,248,250,.9);
+  --shadow-card:0 4px 24px rgba(0,0,0,.08);--shadow-glow:none;
+  --kbd-bg:#e8e8f0;--kbd-border:#c8c8d8;
+  --grid-color:rgba(0,0,0,.03);
+  color-scheme:light;
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+body{font-family:Inter,-apple-system,'Segoe UI',system-ui,Roboto,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;overflow-x:hidden}
+
+.skip-link{position:absolute;left:-999px;top:4px;z-index:999;padding:.5rem 1rem;background:var(--accent-green);color:#fff;border-radius:4px;font-weight:600}
+.skip-link:focus{left:4px}
+
+:focus-visible{outline:2px solid var(--accent-cyan);outline-offset:2px;border-radius:2px}
+
+a{color:var(--accent-cyan);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:.75rem 0;transition:background .3s,box-shadow .3s,backdrop-filter .3s}
+.nav.nav-scrolled{background:var(--nav-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--border-color)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.nav-logo{display:flex;align-items:center;gap:.5rem;font-family:'Cascadia Code','Fira Code','SF Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--text-primary)}
+.nav-logo svg{width:28px;height:28px}
+.nav-links{display:flex;align-items:center;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--text-secondary);font-size:.9rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--accent-cyan)}
+.theme-toggle{background:none;border:2px solid var(--border-color);border-radius:8px;padding:.4rem;cursor:pointer;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s;width:36px;height:36px}
+.theme-toggle:hover{border-color:var(--accent-cyan);color:var(--accent-cyan)}
+.theme-toggle .sun{display:none}
+[data-theme="dark"] .theme-toggle .moon{display:none}
+[data-theme="dark"] .theme-toggle .sun{display:block}
+[data-theme="light"] .theme-toggle .moon{display:block}
+[data-theme="light"] .theme-toggle .sun{display:none}
+.nav-github{color:var(--text-secondary);transition:color .2s}
+.nav-github:hover{color:var(--text-primary)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:.5rem;color:var(--text-primary)}
+.hamburger svg{width:24px;height:24px}
+
+/* ===== HERO ===== */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:8rem 0 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,transparent,transparent 60px,var(--grid-color) 60px,var(--grid-color) 61px),
+  repeating-linear-gradient(90deg,transparent,transparent 60px,var(--grid-color) 60px,var(--grid-color) 61px);
+  pointer-events:none}
+.hero::after{content:'';position:absolute;top:20%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(16,124,16,.08) 0%,transparent 70%);pointer-events:none}
+.hero-content{position:relative;z-index:1;text-align:center}
+.hero-badge{display:inline-block;padding:.35rem 1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:999px;font-size:.8rem;color:var(--accent-purple);font-weight:600;margin-bottom:1.5rem;letter-spacing:.02em}
+.hero h1{font-size:clamp(2.5rem,8vw,5rem);font-weight:800;margin-bottom:.75rem;letter-spacing:-.02em;line-height:1.1}
+.hero h1 .icon-pad{display:inline-block;vertical-align:middle;width:clamp(2rem,6vw,4rem);height:clamp(2rem,6vw,4rem);margin-left:.5rem;animation:pulse-glow 2s ease-in-out infinite}
+@keyframes pulse-glow{0%,100%{filter:drop-shadow(0 0 4px rgba(16,124,16,.4))}50%{filter:drop-shadow(0 0 16px rgba(16,124,16,.8))}}
+.hero-tagline{font-size:clamp(1.25rem,3vw,1.75rem);color:var(--text-secondary);margin-bottom:1rem;font-weight:400}
+.hero-subtitle{font-size:1.05rem;color:var(--text-secondary);margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.7}
+
+kbd{display:inline-block;padding:.15rem .45rem;background:var(--kbd-bg);border:1px solid var(--kbd-border);border-radius:4px;font-family:'Cascadia Code','Fira Code','SF Mono',monospace;font-size:.85em;font-weight:600;line-height:1.4;vertical-align:baseline}
+kbd.xbox-a{color:#107C10;border-color:rgba(16,124,16,.4)}
+kbd.xbox-b{color:#e74c3c;border-color:rgba(231,76,60,.4)}
+kbd.xbox-x{color:#0078d4;border-color:rgba(0,120,212,.4)}
+kbd.xbox-y{color:#f1c40f;border-color:rgba(241,196,15,.4)}
+
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:8px;font-size:1rem;font-weight:600;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--accent-green);color:#fff;box-shadow:0 4px 16px rgba(16,124,16,.3)}
+.btn-primary:hover{box-shadow:0 6px 24px rgba(16,124,16,.5);color:#fff}
+.btn-secondary{background:transparent;color:var(--text-primary);border:2px solid var(--border-color)}
+.btn-secondary:hover{border-color:var(--accent-cyan);color:var(--accent-cyan)}
+.btn-secondary svg{width:18px;height:18px}
+
+.badges{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:3rem}
+.badges img{height:20px;transition:transform .2s}
+.badges img:hover{transform:scale(1.08)}
+.badges-fun{margin-top:.5rem}
+.badges-fun img{height:28px}
+
+@keyframes badge-shine{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.badge-shine{position:relative;overflow:hidden;display:inline-block;border-radius:4px}
+.badge-shine::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);background-size:200% 100%;animation:badge-shine 3s ease-in-out infinite;pointer-events:none}
+
+/* ===== TERMINAL ===== */
+.terminal{max-width:560px;margin:0 auto;background:var(--code-bg);border:1px solid var(--border-color);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-card);text-align:left}
+.terminal-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--bg-card);border-bottom:1px solid var(--border-color)}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+.terminal-dot.r{background:#e74c3c}.terminal-dot.y{background:#f1c40f}.terminal-dot.g{background:#107C10}
+.terminal-body{padding:1rem 1.25rem;font-family:'Cascadia Code','Fira Code','SF Mono',monospace;font-size:.85rem;line-height:1.8}
+.terminal-line{white-space:nowrap;overflow:hidden;opacity:0;animation:type-in .6s forwards}
+.terminal-line:nth-child(1){animation-delay:.5s}
+.terminal-line:nth-child(2){animation-delay:1.5s}
+.terminal-line:nth-child(3){animation-delay:2.5s}
+.terminal-line:nth-child(4){animation-delay:3.5s}
+.terminal-line:nth-child(5){animation-delay:4.5s}
+@keyframes type-in{0%{opacity:0;max-width:0}1%{opacity:1;max-width:0}100%{opacity:1;max-width:100%}}
+.t-prompt{color:var(--accent-cyan)}.t-cmd{color:var(--text-primary)}
+.t-ok{color:#107C10}.t-err{color:#e74c3c}.t-warn{color:#f1c40f}.t-accent{color:var(--accent-purple)}
+
+/* ===== SECTIONS ===== */
+section{padding:5rem 0}
+section:nth-child(even){background:var(--bg-secondary)}
+.section-title{font-size:2rem;font-weight:800;margin-bottom:.5rem;text-align:center}
+.section-sub{color:var(--text-secondary);text-align:center;margin-bottom:3rem;max-width:600px;margin-left:auto;margin-right:auto}
+
+/* ===== FEATURES ===== */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.feature-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:1.75rem;transition:transform .2s,border-color .3s,box-shadow .3s}
+.feature-card:hover{transform:translateY(-4px);border-color:var(--accent-cyan);box-shadow:var(--shadow-glow)}
+.feature-icon{width:40px;height:40px;margin-bottom:1rem;color:var(--accent-green)}
+.feature-card h3{font-size:1.1rem;margin-bottom:.5rem}
+.feature-card p{color:var(--text-secondary);font-size:.9rem;line-height:1.5}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.is-visible{opacity:1;transform:none}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
+.reveal-d4{transition-delay:.4s}.reveal-d5{transition-delay:.5s}
+
+/* ===== BUTTON MAP ===== */
+.controller-diagram{text-align:center;margin-bottom:3rem}
+.controller-diagram svg{max-width:500px;width:100%;height:auto}
+.btn-table-wrap{overflow-x:auto}
+.btn-table{width:100%;border-collapse:collapse;font-family:'Cascadia Code','Fira Code','SF Mono',monospace;font-size:.85rem}
+.btn-table th,.btn-table td{padding:.65rem 1rem;text-align:left;border-bottom:1px solid var(--border-color)}
+.btn-table th{color:var(--accent-green);font-weight:600;text-transform:uppercase;font-size:.75rem;letter-spacing:.05em}
+.btn-table tr:hover td{background:var(--bg-card-hover)}
+
+/* ===== COMBOS ===== */
+.combos-grid{display:grid;gap:1.25rem}
+.combo-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;transition:border-color .3s}
+.combo-card:hover{border-color:var(--accent-purple)}
+.combo-name{font-weight:700;font-size:1.1rem;min-width:140px}
+.combo-level{font-size:.75rem;color:var(--text-muted)}
+.combo-seq{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
+.combo-seq .arr{color:var(--text-muted);font-size:.75rem}
+.combo-action{color:var(--text-secondary);font-size:.9rem;margin-left:auto}
+.combo-window{color:var(--text-muted);font-size:.75rem;font-family:'Cascadia Code','Fira Code','SF Mono',monospace}
+.combo-konami{border-image:linear-gradient(90deg,#e74c3c,#f1c40f,#107C10,#0078d4,#8b5cf6) 1;position:relative}
+.combo-konami .combo-badge{position:absolute;top:-10px;right:16px;background:linear-gradient(135deg,#8b5cf6,#e74c3c);color:#fff;font-size:.7rem;font-weight:700;padding:.15rem .6rem;border-radius:4px;letter-spacing:.05em}
+
+/* ===== HAPTIC ===== */
+.haptic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
+.haptic-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;transition:border-color .3s}
+.haptic-card:hover{border-color:var(--accent-green)}
+.haptic-name{font-weight:700;font-size:.95rem;margin-bottom:.25rem;font-family:'Cascadia Code','Fira Code','SF Mono',monospace;color:var(--accent-green)}
+.haptic-desc{color:var(--text-secondary);font-size:.8rem;margin-bottom:.75rem}
+.waveform{display:flex;align-items:flex-end;gap:3px;height:40px}
+.waveform-bar{background:var(--accent-green);border-radius:2px 2px 0 0;min-width:8px;transition:height .6s ease;opacity:.8}
+.waveform-pause{width:4px;background:transparent}
+.reveal .waveform-bar{height:0!important}
+.reveal.is-visible .waveform-bar{height:var(--h)!important}
+
+/* ===== QUICK START ===== */
+.steps{max-width:700px;margin:0 auto;position:relative;padding-left:2.5rem}
+.steps::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:var(--border-color)}
+.step{position:relative;margin-bottom:2.5rem}
+.step:last-child{margin-bottom:0}
+.step-num{position:absolute;left:-2.5rem;top:0;width:32px;height:32px;background:var(--accent-green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.step h3{margin-bottom:.75rem;font-size:1rem}
+.code-block{position:relative;background:var(--code-bg);border:1px solid var(--border-color);border-radius:8px;padding:1rem 1.25rem;padding-right:3rem;font-family:'Cascadia Code','Fira Code','SF Mono',monospace;font-size:.85rem;overflow-x:auto;line-height:1.6}
+.code-block .copy-btn{position:absolute;top:.5rem;right:.5rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:6px;padding:.35rem;cursor:pointer;color:var(--text-muted);transition:color .2s,border-color .2s;display:flex}
+.code-block .copy-btn:hover{color:var(--accent-cyan);border-color:var(--accent-cyan)}
+.code-block-hero{font-size:1rem;border-color:var(--accent-green);box-shadow:0 0 20px rgba(16,124,16,.15)}
+.code-block .copy-btn svg{width:16px;height:16px}
+.json-key{color:var(--accent-cyan)}.json-str{color:var(--accent-green)}.json-brace{color:var(--text-muted)}
+
+/* ===== ARCHITECTURE ===== */
+.arch-wrap{text-align:center;margin-bottom:2rem}
+.arch-wrap svg{max-width:800px;width:100%;height:auto}
+.arch-desc{max-width:700px;margin:0 auto;color:var(--text-secondary);text-align:center;font-size:.95rem;line-height:1.6}
+.arch-desc strong{color:var(--text-primary)}
+
+@keyframes dash-flow{to{stroke-dashoffset:-20}}
+.flow-line{stroke-dasharray:8 4;animation:dash-flow 1.5s linear infinite}
+
+/* ===== FOOTER ===== */
+.footer{background:var(--bg-secondary);border-top:1px solid var(--border-color);padding:3rem 0;text-align:center}
+.footer-quote{font-style:italic;color:var(--text-secondary);margin-bottom:1.5rem;font-size:1.05rem}
+.footer-links{display:flex;justify-content:center;gap:1.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.footer-links a{color:var(--text-muted);font-size:.9rem}
+.footer-links a:hover{color:var(--accent-cyan)}
+.footer-note{color:var(--text-muted);font-size:.8rem;margin-bottom:.5rem}
+.footer-copy{color:var(--text-muted);font-size:.75rem}
+
+/* ===== RAINBOW EASTER EGG ===== */
+@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+.rainbow-mode{animation:rainbow 3s linear!important}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .nav-links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-primary);flex-direction:column;justify-content:center;align-items:center;gap:2rem;z-index:99}
+  .nav-links.open{display:flex}
+  .hamburger{display:block;z-index:101}
+  .features-grid{grid-template-columns:1fr}
+  .combo-card{flex-direction:column;align-items:flex-start;gap:.75rem}
+  .combo-action{margin-left:0}
+  .hero h1{font-size:2.5rem}
+}
+@media(max-width:640px){
+  section{padding:3rem 0}
+  .steps{padding-left:2rem}
+  .step-num{left:-2rem;width:28px;height:28px;font-size:.75rem}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .reveal{opacity:1;transform:none}
+  .terminal-line{opacity:1;max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- NAV -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="ClaudePad home">
+      <svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M4 12c0-3 2-6 5-7s4 0 5 1 2-1 5-1 5 4 5 7-1 9-4 10-3-2-6-2-3 3-6 2S4 17 4 12z" stroke="#107C10" stroke-width="1.5" fill="none"/><circle cx="10.5" cy="11" r="2" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="19" cy="13" r="1" fill="#107C10"/><circle cx="21" cy="11" r="1" fill="#e74c3c"/><circle cx="17" cy="11" r="1" fill="#0078d4"/><circle cx="19" cy="9" r="1" fill="#f1c40f"/></svg>
+      ClaudePad
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#button-map">Buttons</a></li>
+      <li><a href="#combos">Combos</a></li>
+      <li><a href="#quick-start">Start</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+          <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </li>
+      <li>
+        <a href="https://github.com/talkstream/ClaudePad" class="nav-github" aria-label="GitHub repository" target="_blank" rel="noopener">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+      </li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="hero" aria-label="Introduction">
+  <div class="container hero-content">
+    <span class="hero-badge">Plugin for Claude Code</span>
+    <h1>
+      ClaudePad
+      <svg class="icon-pad" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M8 22c0-5 3-10 8-11s6 0 8 2 3-2 8-2 8 6 8 11-2 14-6 16-5-3-10-3-5 5-10 3S8 27 8 22z" fill="none" stroke="#107C10" stroke-width="2"/><circle cx="18" cy="20" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="33" cy="23" r="1.5" fill="#107C10"/><circle cx="36" cy="20" r="1.5" fill="#e74c3c"/><circle cx="30" cy="20" r="1.5" fill="#0078d4"/><circle cx="33" cy="17" r="1.5" fill="#f1c40f"/></svg>
+    </h1>
+    <p class="hero-tagline">Vibe-code from your couch.</p>
+    <p class="hero-subtitle">
+      Approve with <kbd class="xbox-a">A</kbd>, deny with <kbd class="xbox-b">B</kbd>, commit+push with a Hadouken.
+    </p>
+    <div class="hero-cta">
+      <a href="#quick-start" class="btn btn-primary">Get Started</a>
+      <a href="https://github.com/talkstream/ClaudePad" class="btn btn-secondary" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <div class="badges">
+      <span class="badge-shine"><img src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white" alt="TypeScript" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/Xbox-Controller-107C10?logo=xbox&logoColor=white" alt="Xbox Controller" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/MCP-Protocol-8b5cf6" alt="MCP Protocol" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white" alt="macOS" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/License-MIT-yellow" alt="License MIT" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/npm/v/claudepad" alt="npm version" loading="lazy"></span>
+    </div>
+    <div class="badges badges-fun">
+      <span class="badge-shine"><img src="https://img.shields.io/badge/Vibe-Coded_%F0%9F%8E%AE-ff6b6b?style=for-the-badge" alt="Vibe Coded" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/Couch-Compatible_%F0%9F%9B%8B%EF%B8%8F-00d4ff?style=for-the-badge" alt="Couch Compatible" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/Hadouken-Inside_%F0%9F%91%8A-f1c40f?style=for-the-badge" alt="Hadouken Inside" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/Works_on-My_Couch%E2%84%A2-107C10?style=for-the-badge" alt="Works on My Couch" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/Rumble-Ready_%F0%9F%93%B3-e74c3c?style=for-the-badge" alt="Rumble Ready" loading="lazy"></span>
+      <span class="badge-shine"><img src="https://img.shields.io/badge/0_Keyboards-Harmed-2ecc40?style=for-the-badge" alt="0 Keyboards Harmed" loading="lazy"></span>
+    </div>
+
+    <div class="terminal reveal">
+      <div class="terminal-bar"><span class="terminal-dot r"></span><span class="terminal-dot y"></span><span class="terminal-dot g"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line"><span class="t-prompt">$ </span><span class="t-cmd">claude mcp add claudepad -- npx -y claudepad</span></div>
+        <div class="terminal-line"><span class="t-ok">&#10003; </span><span class="t-cmd">Added </span><span class="t-accent">claudepad</span><span class="t-cmd"> MCP server</span></div>
+        <div class="terminal-line"><span class="t-prompt">$ </span><span class="t-cmd">claude</span></div>
+        <div class="terminal-line"><span class="t-ok">&#10003; </span><span class="t-cmd">Controller detected: </span><span class="t-accent">Xbox Wireless Controller</span></div>
+        <div class="terminal-line"><span class="t-ok">[A] </span><span class="t-cmd">Approved! </span><span class="t-ok">&#10003;</span></div>
+        <div class="terminal-line"><span class="t-err">[B] </span><span class="t-cmd">Denied </span><span class="t-err">&#10007;</span></div>
+        <div class="terminal-line"><span class="t-warn">&#9889; </span><span class="t-cmd">Combo: </span><span class="t-accent">Hadouken</span><span class="t-cmd"> &rarr; git commit + push</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" aria-label="Features">
+  <div class="container">
+    <h2 class="section-title">Features</h2>
+    <p class="section-sub">Everything you need to code from the couch.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-d1">
+        <svg class="feature-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="4" y="10" width="32" height="20" rx="4" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="20" r="3" fill="currentColor" opacity=".3"/><circle cx="28" cy="17" r="1.5" fill="#107C10"/><circle cx="31" cy="20" r="1.5" fill="#e74c3c"/><circle cx="25" cy="20" r="1.5" fill="#0078d4"/><circle cx="28" cy="23" r="1.5" fill="#f1c40f"/></svg>
+        <h3>16 Mapped Buttons</h3>
+        <p>Every Xbox button mapped to a Claude Code action. Approve, deny, scroll, navigate &mdash; all from your controller.</p>
+      </div>
+      <div class="feature-card reveal reveal-d2">
+        <svg class="feature-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M8 28l6-8 4 4 8-12 6 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="16" r="3" fill="var(--accent-purple)" opacity=".5"/></svg>
+        <h3>Fighting Game Combos</h3>
+        <p>Hadouken to commit+push. Shoryuken to reset. Input sequences trigger real actions &mdash; with timing windows.</p>
+      </div>
+      <div class="feature-card reveal reveal-d3">
+        <svg class="feature-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M12 20c0-4 3-8 8-8s8 4 8 8" stroke="currentColor" stroke-width="2"/><path d="M16 20c0-2 2-4 4-4s4 2 4 4" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="20" y2="32" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="20" r="2" fill="var(--accent-green)"/></svg>
+        <h3>Haptic Feedback</h3>
+        <p>8 vibration patterns. Know when Claude is done thinking, when errors occur, or when combos activate &mdash; without looking.</p>
+      </div>
+      <div class="feature-card reveal reveal-d4">
+        <svg class="feature-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="10" y="8" width="20" height="24" rx="3" stroke="currentColor" stroke-width="2"/><path d="M16 20h8M16 24h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="20" cy="14" r="3" fill="var(--accent-cyan)" opacity=".4"/></svg>
+        <h3>Voice Input</h3>
+        <p>Xbox button triggers /voice transcription. Dictate prompts to Claude Code hands-free from across the room.</p>
+      </div>
+      <div class="feature-card reveal reveal-d5">
+        <svg class="feature-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="6" y="12" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/><rect x="22" y="12" width="12" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M18 18h4M18 22h4" stroke="var(--accent-purple)" stroke-width="2" stroke-linecap="round"/></svg>
+        <h3>One-Liner Install</h3>
+        <p>One command to add to Claude Code. 6 MCP tools &mdash; read state, wait for input, send rumble, detect combos, configure mappings.</p>
+      </div>
+      <div class="feature-card reveal">
+        <svg class="feature-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="8" y="6" width="24" height="28" rx="3" stroke="currentColor" stroke-width="2"/><path d="M14 14h12M14 18h8M14 22h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".5"/><circle cx="28" cy="30" r="5" fill="var(--accent-green)" opacity=".2" stroke="var(--accent-green)" stroke-width="1.5"/><path d="M26 30l1.5 1.5L30 28.5" stroke="var(--accent-green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>Daemon Mode</h3>
+        <p>Run standalone via launchd. Always-on gamepad input without MCP &mdash; just controller-to-terminal, directly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUTTON MAP -->
+<section id="button-map" aria-label="Button mappings" style="background:var(--bg-secondary)">
+  <div class="container">
+    <h2 class="section-title">Button Map</h2>
+    <p class="section-sub">Every button has a purpose. Here's the full layout.</p>
+
+    <div class="controller-diagram reveal">
+      <!-- Based on Controllercons Xbox One (CC0 public domain) -->
+      <svg viewBox="0 0 64 56" fill="none" aria-hidden="true" style="max-width:520px">
+        <!-- Controller body outline -->
+        <path d="M63.5 39.608c-.07-.357-.148-.706-.234-1.055l.036-.012s-.477-2.723-1.387-5.97c-1.375-4.904-3.485-11.252-4.41-13.234-1.54-3.296-2.106-4.224-3.129-4.635l-.007-.002c-.002-.008-.512-1.647-.974-2.11-.46-.463-3.232-1.838-5.002-2.336-1.24-.348-4.23-1.062-5.539-.444-1.308.617-1 .849-2.154.927-.463.032-2.148.024-4.002.006l.007.002h-9.407v-.002c-1.854.018-3.54.026-4.002-.006-1.154-.078-.846-.31-2.154-.927-1.309-.618-4.3.096-5.54.444-1.769.498-4.54 1.873-5.001 2.336-.463.465-.975 2.112-.975 2.112-1.027.411-1.592 1.339-3.129 4.635-.928 1.982-3.037 8.33-4.412 13.234A68.14 68.14 0 0 0 .7 38.54l.031.012c-.082.349-.16.698-.23 1.055-1.2 6.226-.367 11.7 3.828 13.916.525.279 1.03.616 1.654.816.73.231 1.141-.004 1.5-.31 3.655-3.11 5.81-6.603 7.637-8.925a14.46 14.46 0 0 1 2.647-2.549c.681-.372 1.353-.702 1.755-.768.254-.043.553-.083.885-.11H43.51v-.008c.367.031.695.07.968.118.407.066 1.079.396 1.758.768 1.168.87 2.086 1.835 2.645 2.55 1.828 2.32 3.98 5.814 7.636 8.924.36.306.77.541 1.5.31.626-.2 1.133-.537 1.657-.816 4.195-2.215 5.023-7.69 3.828-13.916z" fill="var(--bg-card)" stroke="var(--accent-cyan)" stroke-width=".7" opacity=".9"/>
+        <!-- Left stick -->
+        <circle cx="15.4" cy="21.6" r="3.6" fill="none" stroke="var(--border-color)" stroke-width=".5"/>
+        <circle cx="15.4" cy="21.6" r="1.5" fill="var(--border-color)" opacity=".3"/>
+        <text x="15.4" y="27" text-anchor="middle" fill="var(--text-muted)" font-size="2.2" font-family="monospace">L3: Tab</text>
+        <!-- D-pad -->
+        <rect x="18.55" y="29" width="2.1" height="5.5" rx=".5" fill="var(--border-color)" opacity=".4"/>
+        <rect x="17.2" y="30.6" width="4.8" height="2.1" rx=".5" fill="var(--border-color)" opacity=".4"/>
+        <text x="19.6" y="37" text-anchor="middle" fill="var(--text-muted)" font-size="2.2" font-family="monospace">D-pad</text>
+        <!-- Xbox button -->
+        <circle cx="32" cy="15.2" r="2.5" fill="none" stroke="#107C10" stroke-width=".6"/>
+        <text x="32" y="15.9" text-anchor="middle" fill="#107C10" font-size="1.8" font-weight="bold" font-family="monospace">Xbox</text>
+        <!-- View / Menu -->
+        <rect x="24.5" y="19.5" width="4" height="1.8" rx=".6" fill="none" stroke="var(--text-muted)" stroke-width=".35"/>
+        <text x="26.5" y="20.9" text-anchor="middle" fill="var(--text-muted)" font-size="1.6" font-family="monospace">View</text>
+        <rect x="35.5" y="19.5" width="4" height="1.8" rx=".6" fill="none" stroke="var(--text-muted)" stroke-width=".35"/>
+        <text x="37.5" y="20.9" text-anchor="middle" fill="var(--text-muted)" font-size="1.6" font-family="monospace">Menu</text>
+        <!-- Face buttons Y/X/B/A diamond -->
+        <circle cx="48.8" cy="17.5" r="2.2" fill="none" stroke="#f1c40f" stroke-width=".6"/>
+        <text x="48.8" y="18.3" text-anchor="middle" fill="#f1c40f" font-size="2.5" font-weight="bold" font-family="monospace">Y</text>
+        <circle cx="44.4" cy="21.9" r="2.2" fill="none" stroke="#0078d4" stroke-width=".6"/>
+        <text x="44.4" y="22.7" text-anchor="middle" fill="#0078d4" font-size="2.5" font-weight="bold" font-family="monospace">X</text>
+        <circle cx="53.2" cy="21.9" r="2.2" fill="none" stroke="#e74c3c" stroke-width=".6"/>
+        <text x="53.2" y="22.7" text-anchor="middle" fill="#e74c3c" font-size="2.5" font-weight="bold" font-family="monospace">B</text>
+        <circle cx="48.8" cy="26.3" r="2.2" fill="none" stroke="#107C10" stroke-width=".6"/>
+        <text x="48.8" y="27.1" text-anchor="middle" fill="#107C10" font-size="2.5" font-weight="bold" font-family="monospace">A</text>
+        <!-- Right stick -->
+        <circle cx="40.6" cy="31.5" r="3.6" fill="none" stroke="var(--border-color)" stroke-width=".5"/>
+        <circle cx="40.6" cy="31.5" r="1.5" fill="var(--border-color)" opacity=".3"/>
+        <text x="40.6" y="37" text-anchor="middle" fill="var(--text-muted)" font-size="2.2" font-family="monospace">R3: /menu</text>
+        <!-- Bumpers -->
+        <rect x="9" y="11.5" width="11" height="2" rx="1" fill="none" stroke="var(--text-muted)" stroke-width=".4"/>
+        <text x="14.5" y="13" text-anchor="middle" fill="var(--text-muted)" font-size="1.8" font-weight="600" font-family="monospace">LB</text>
+        <rect x="44" y="11.5" width="11" height="2" rx="1" fill="none" stroke="var(--text-muted)" stroke-width=".4"/>
+        <text x="49.5" y="13" text-anchor="middle" fill="var(--text-muted)" font-size="1.8" font-weight="600" font-family="monospace">RB</text>
+        <!-- Blueprint label -->
+        <text x="32" y="50" text-anchor="middle" fill="var(--text-muted)" font-size="2" font-family="monospace" opacity=".5" letter-spacing=".3">CLAUDEPAD CONTROLLER BLUEPRINT</text>
+      </svg>
+    </div>
+
+    <div class="btn-table-wrap reveal">
+      <table class="btn-table" role="table">
+        <thead><tr><th>Button</th><th>Keys</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd class="xbox-a">A</kbd></td><td><code>y + Enter</code></td><td>Approve (yes + Enter)</td></tr>
+          <tr><td><kbd class="xbox-b">B</kbd></td><td><code>n + Enter</code></td><td>Deny (no + Enter)</td></tr>
+          <tr><td><kbd class="xbox-x">X</kbd></td><td><code>Ctrl+C</code></td><td>Interrupt</td></tr>
+          <tr><td><kbd class="xbox-y">Y</kbd></td><td><code>Escape</code></td><td>Skip</td></tr>
+          <tr><td><kbd>LB</kbd></td><td><code>Ctrl+B PgUp</code></td><td>Scroll up (tmux)</td></tr>
+          <tr><td><kbd>RB</kbd></td><td><code>Ctrl+B PgDn</code></td><td>Scroll down (tmux)</td></tr>
+          <tr><td><kbd>D-pad &uarr;</kbd></td><td><code>Up</code></td><td>Arrow up</td></tr>
+          <tr><td><kbd>D-pad &darr;</kbd></td><td><code>Down</code></td><td>Arrow down</td></tr>
+          <tr><td><kbd>D-pad &larr;</kbd></td><td><code>Left</code></td><td>Cursor left</td></tr>
+          <tr><td><kbd>D-pad &rarr;</kbd></td><td><code>Right</code></td><td>Cursor right</td></tr>
+          <tr><td><kbd>Menu</kbd></td><td><code>Enter</code></td><td>Enter / confirm</td></tr>
+          <tr><td><kbd>View</kbd></td><td><code>Ctrl+C</code></td><td>Interrupt</td></tr>
+          <tr><td><kbd>Xbox</kbd></td><td><code>/voice Enter</code></td><td>Voice input</td></tr>
+          <tr><td><kbd>L3</kbd></td><td><code>Tab</code></td><td>Autocomplete</td></tr>
+          <tr><td><kbd>R3</kbd></td><td><code>/ Enter</code></td><td>Slash command menu</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- COMBOS -->
+<section id="combos" aria-label="Combo system">
+  <div class="container">
+    <h2 class="section-title">Combo System</h2>
+    <p class="section-sub">Input sequences within a time window trigger special actions &mdash; just like fighting games.</p>
+    <div class="combos-grid">
+
+      <div class="combo-card reveal">
+        <div>
+          <div class="combo-name">Quick Approve</div>
+          <div class="combo-level">&starf;&star;&star; Novice</div>
+        </div>
+        <div class="combo-seq">
+          <kbd class="xbox-a">A</kbd><span class="arr">&rarr;</span><kbd class="xbox-a">A</kbd>
+        </div>
+        <div class="combo-window">300ms</div>
+        <div class="combo-action">Approve with &ldquo;proceed&rdquo;</div>
+      </div>
+
+      <div class="combo-card reveal">
+        <div>
+          <div class="combo-name">Turbo Mode</div>
+          <div class="combo-level">&starf;&starf;&star; Advanced</div>
+        </div>
+        <div class="combo-seq">
+          <kbd>LB</kbd><span class="arr">&rarr;</span><kbd>RB</kbd>
+        </div>
+        <div class="combo-window">200ms</div>
+        <div class="combo-action">Toggle auto-approve</div>
+      </div>
+
+      <div class="combo-card reveal">
+        <div>
+          <div class="combo-name">Hadouken</div>
+          <div class="combo-level">&starf;&starf;&starf; Master</div>
+        </div>
+        <div class="combo-seq">
+          <kbd>&darr;</kbd><span class="arr">&rarr;</span><kbd>&rarr;</kbd><span class="arr">&rarr;</span><kbd class="xbox-a">A</kbd>
+        </div>
+        <div class="combo-window">500ms</div>
+        <div class="combo-action">git commit + push</div>
+      </div>
+
+      <div class="combo-card reveal">
+        <div>
+          <div class="combo-name">Shoryuken</div>
+          <div class="combo-level">&starf;&starf;&starf; Master</div>
+        </div>
+        <div class="combo-seq">
+          <kbd>&rarr;</kbd><span class="arr">&rarr;</span><kbd>&darr;</kbd><span class="arr">&rarr;</span><kbd>&rarr;</kbd><span class="arr">&rarr;</span><kbd class="xbox-b">B</kbd>
+        </div>
+        <div class="combo-window">600ms</div>
+        <div class="combo-action">Reset conversation</div>
+      </div>
+
+      <div class="combo-card combo-konami reveal">
+        <span class="combo-badge">EASTER EGG</span>
+        <div>
+          <div class="combo-name">Konami Code</div>
+          <div class="combo-level">&starf;&starf;&starf; Master</div>
+        </div>
+        <div class="combo-seq">
+          <kbd>&uarr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&darr;</kbd><kbd>&larr;</kbd><kbd>&rarr;</kbd><kbd>&larr;</kbd><kbd>&rarr;</kbd><kbd class="xbox-b">B</kbd><kbd class="xbox-a">A</kbd>
+        </div>
+        <div class="combo-window">3000ms</div>
+        <div class="combo-action">Rainbow rumble</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HAPTIC -->
+<section id="haptic" aria-label="Haptic feedback" style="background:var(--bg-secondary)">
+  <div class="container">
+    <h2 class="section-title">Haptic Patterns</h2>
+    <p class="section-sub">Your controller vibrates to communicate state &mdash; no need to look at the screen.</p>
+    <div class="haptic-grid">
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">success</div>
+        <div class="haptic-desc">Gentle double pulse &mdash; task completed</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:12px;width:20px"></div>
+          <div class="waveform-pause"></div>
+          <div class="waveform-bar" style="--h:12px;width:20px"></div>
+        </div>
+      </div>
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">error</div>
+        <div class="haptic-desc">Hard long buzz &mdash; something broke</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:34px;width:50px;background:var(--accent-red)"></div>
+        </div>
+      </div>
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">warning</div>
+        <div class="haptic-desc">Medium single pulse &mdash; heads up</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:22px;width:30px;background:var(--accent-yellow)"></div>
+        </div>
+      </div>
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">approval_prompt</div>
+        <div class="haptic-desc">Triple tap rhythm &mdash; Claude needs your input</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:10px;width:10px"></div>
+          <div class="waveform-pause"></div>
+          <div class="waveform-bar" style="--h:10px;width:10px"></div>
+          <div class="waveform-pause"></div>
+          <div class="waveform-bar" style="--h:10px;width:10px"></div>
+        </div>
+      </div>
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">task_complete</div>
+        <div class="haptic-desc">Rising crescendo &mdash; major milestone</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:8px;width:15px"></div>
+          <div class="waveform-pause"></div>
+          <div class="waveform-bar" style="--h:16px;width:15px"></div>
+          <div class="waveform-pause"></div>
+          <div class="waveform-bar" style="--h:28px;width:25px"></div>
+        </div>
+      </div>
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">combo_activated</div>
+        <div class="haptic-desc">Sharp snap &mdash; combo detected</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:40px;width:5px;background:var(--accent-purple)"></div>
+        </div>
+      </div>
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">voice_start</div>
+        <div class="haptic-desc">Light click &mdash; voice recording started</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:6px;width:8px;background:var(--accent-cyan)"></div>
+        </div>
+      </div>
+
+      <div class="haptic-card reveal">
+        <div class="haptic-name">rainbow</div>
+        <div class="haptic-desc">Wave crescendo &mdash; easter egg activated</div>
+        <div class="waveform" aria-hidden="true">
+          <div class="waveform-bar" style="--h:6px;width:6px;background:#e74c3c"></div>
+          <div class="waveform-bar" style="--h:12px;width:6px;background:#f1c40f"></div>
+          <div class="waveform-bar" style="--h:18px;width:6px;background:#107C10"></div>
+          <div class="waveform-bar" style="--h:24px;width:6px;background:#0078d4"></div>
+          <div class="waveform-bar" style="--h:30px;width:6px;background:#8b5cf6"></div>
+          <div class="waveform-bar" style="--h:38px;width:8px;background:#e74c3c"></div>
+          <div class="waveform-bar" style="--h:30px;width:6px;background:#f1c40f"></div>
+          <div class="waveform-bar" style="--h:24px;width:6px;background:#107C10"></div>
+          <div class="waveform-bar" style="--h:18px;width:6px;background:#0078d4"></div>
+          <div class="waveform-bar" style="--h:12px;width:6px;background:#8b5cf6"></div>
+          <div class="waveform-bar" style="--h:6px;width:6px;background:#e74c3c"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- QUICK START -->
+<section id="quick-start" aria-label="Quick start guide">
+  <div class="container">
+    <h2 class="section-title">Quick Start</h2>
+    <p class="section-sub">One command. That's it.</p>
+    <div class="steps">
+
+      <div class="step reveal">
+        <span class="step-num">1</span>
+        <h3>Install SDL2 (one-time)</h3>
+        <div class="code-block">
+          <button class="copy-btn" aria-label="Copy to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+brew install cmake sdl2</div>
+      </div>
+
+      <div class="step reveal">
+        <span class="step-num">2</span>
+        <h3>Add to Claude Code</h3>
+        <div class="code-block code-block-hero">
+          <button class="copy-btn" aria-label="Copy to clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+claude mcp add claudepad -- npx -y claudepad</div>
+        <p style="color:var(--text-secondary);font-size:.85rem;margin-top:.75rem">Restart Claude Code, connect your Xbox controller via Bluetooth, and you're done.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture" aria-label="Architecture" style="background:var(--bg-secondary)">
+  <div class="container">
+    <h2 class="section-title">Architecture</h2>
+    <p class="section-sub">How your button presses reach Claude Code.</p>
+    <div class="arch-wrap reveal">
+      <svg viewBox="0 0 800 200" fill="none" aria-hidden="true">
+        <!-- Nodes -->
+        <rect x="10" y="70" width="120" height="60" rx="8" fill="var(--bg-card)" stroke="#107C10" stroke-width="1.5"/>
+        <text x="70" y="95" text-anchor="middle" fill="#107C10" font-size="11" font-weight="bold" font-family="monospace">Xbox</text>
+        <text x="70" y="112" text-anchor="middle" fill="var(--text-muted)" font-size="9" font-family="monospace">Controller</text>
+
+        <rect x="170" y="70" width="120" height="60" rx="8" fill="var(--bg-card)" stroke="#107C10" stroke-width="1.5"/>
+        <text x="230" y="95" text-anchor="middle" fill="#107C10" font-size="11" font-weight="bold" font-family="monospace">macOS</text>
+        <text x="230" y="112" text-anchor="middle" fill="var(--text-muted)" font-size="9" font-family="monospace">SDL2 driver</text>
+
+        <rect x="330" y="70" width="140" height="60" rx="8" fill="var(--bg-card)" stroke="var(--accent-cyan)" stroke-width="1.5"/>
+        <text x="400" y="95" text-anchor="middle" fill="var(--accent-cyan)" font-size="11" font-weight="bold" font-family="monospace">GamepadManager</text>
+        <text x="400" y="112" text-anchor="middle" fill="var(--text-muted)" font-size="9" font-family="monospace">singleton, 30fps</text>
+
+        <rect x="520" y="20" width="120" height="50" rx="8" fill="var(--bg-card)" stroke="var(--accent-cyan)" stroke-width="1.5"/>
+        <text x="580" y="42" text-anchor="middle" fill="var(--accent-cyan)" font-size="10" font-weight="bold" font-family="monospace">ButtonMapper</text>
+        <text x="580" y="56" text-anchor="middle" fill="var(--text-muted)" font-size="8" font-family="monospace">button &rarr; keys</text>
+
+        <rect x="520" y="130" width="120" height="50" rx="8" fill="var(--bg-card)" stroke="var(--accent-cyan)" stroke-width="1.5"/>
+        <text x="580" y="152" text-anchor="middle" fill="var(--accent-cyan)" font-size="10" font-weight="bold" font-family="monospace">ComboDetector</text>
+        <text x="580" y="166" text-anchor="middle" fill="var(--text-muted)" font-size="8" font-family="monospace">sequence match</text>
+
+        <rect x="680" y="20" width="110" height="50" rx="8" fill="var(--bg-card)" stroke="var(--accent-purple)" stroke-width="1.5"/>
+        <text x="735" y="42" text-anchor="middle" fill="var(--accent-purple)" font-size="10" font-weight="bold" font-family="monospace">Keystroke</text>
+        <text x="735" y="56" text-anchor="middle" fill="var(--text-muted)" font-size="8" font-family="monospace">tmux / osascript</text>
+
+        <!-- Flow lines -->
+        <line x1="130" y1="100" x2="170" y2="100" stroke="#107C10" stroke-width="1.5" class="flow-line"/>
+        <line x1="290" y1="100" x2="330" y2="100" stroke="#107C10" stroke-width="1.5" class="flow-line"/>
+        <line x1="470" y1="85" x2="520" y2="50" stroke="var(--accent-cyan)" stroke-width="1.5" class="flow-line"/>
+        <line x1="470" y1="115" x2="520" y2="150" stroke="var(--accent-cyan)" stroke-width="1.5" class="flow-line"/>
+        <line x1="640" y1="45" x2="680" y2="45" stroke="var(--accent-purple)" stroke-width="1.5" class="flow-line"/>
+
+        <!-- Arrow heads -->
+        <polygon points="170,96 162,100 170,104" fill="#107C10"/>
+        <polygon points="330,96 322,100 330,104" fill="#107C10"/>
+        <polygon points="520,47 513,43 515,51" fill="var(--accent-cyan)"/>
+        <polygon points="520,147 515,141 513,149" fill="var(--accent-cyan)"/>
+        <polygon points="680,41 672,45 680,49" fill="var(--accent-purple)"/>
+
+        <!-- Legend -->
+        <circle cx="30" cy="185" r="5" fill="#107C10"/><text x="40" y="189" fill="var(--text-muted)" font-size="9" font-family="monospace">Hardware</text>
+        <circle cx="130" cy="185" r="5" fill="var(--accent-cyan)"/><text x="140" y="189" fill="var(--text-muted)" font-size="9" font-family="monospace">Middleware</text>
+        <circle cx="240" cy="185" r="5" fill="var(--accent-purple)"/><text x="250" y="189" fill="var(--text-muted)" font-size="9" font-family="monospace">Output</text>
+      </svg>
+    </div>
+    <p class="arch-desc reveal">
+      <strong>Plugin mode:</strong> One command to install. Claude Code connects via MCP and calls gamepad tools directly.<br>
+      <strong>Daemon mode:</strong> Runs standalone via launchd &mdash; button presses inject keystrokes into the active tmux session.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <p class="footer-quote">&ldquo;Coding never changes. But your input device just did.&rdquo;</p>
+    <div class="footer-links">
+      <a href="https://github.com/talkstream/ClaudePad" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/talkstream/ClaudePad/issues" target="_blank" rel="noopener">Issues</a>
+      <a href="https://github.com/talkstream/ClaudePad/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+    </div>
+    <p class="footer-note">Built with TypeScript, SDL2, and too many Hadoukens.</p>
+    <p class="footer-copy">&copy; 2025 ClaudePad. MIT License.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Theme toggle
+  var toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', function(){
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('claudepad-theme', next);
+  });
+  // System theme change listener
+  matchMedia('(prefers-color-scheme:light)').addEventListener('change', function(e){
+    if (!localStorage.getItem('claudepad-theme')) {
+      document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
+    }
+  });
+
+  // Scroll reveals
+  var reveals = document.querySelectorAll('.reveal');
+  var revealObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+  reveals.forEach(function(el){ revealObs.observe(el); });
+
+  // Nav scroll state
+  var nav = document.querySelector('.nav');
+  var hero = document.getElementById('hero');
+  var navObs = new IntersectionObserver(function(entries){
+    nav.classList.toggle('nav-scrolled', !entries[0].isIntersecting);
+  }, {threshold:0});
+  navObs.observe(hero);
+
+  // Mobile hamburger
+  var hamburger = document.getElementById('hamburger');
+  var navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', function(){
+    var expanded = navLinks.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', expanded);
+  });
+  navLinks.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') {
+      navLinks.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Copy to clipboard
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.code-block');
+      var text = block.textContent.replace(/^\s+/,'').trim();
+      // Remove the copy button text from clipboard
+      text = text.replace(/Copy to clipboard/g, '').trim();
+      navigator.clipboard.writeText(text).then(function(){
+        btn.style.color = 'var(--accent-green)';
+        setTimeout(function(){ btn.style.color = ''; }, 1500);
+      });
+    });
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({behavior:'smooth'});
+      }
+    });
+  });
+
+  // Konami Code easter egg
+  var konami = [38,38,40,40,37,39,37,39,66,65];
+  var konamiPos = 0;
+  document.addEventListener('keydown', function(e){
+    if (e.keyCode === konami[konamiPos]) {
+      konamiPos++;
+      if (konamiPos === konami.length) {
+        document.documentElement.classList.add('rainbow-mode');
+        setTimeout(function(){
+          document.documentElement.classList.remove('rainbow-mode');
+        }, 3000);
+        konamiPos = 0;
+      }
+    } else {
+      konamiPos = 0;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

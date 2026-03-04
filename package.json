@@ -1,9 +1,21 @@
 {
   "name": "claudepad",
-  "version": "0.1.0",
-  "description": "Xbox Gamepad MCP Server for Claude Code — approve tools with A, deny with B, haptic feedback, fighting game combos",
+  "version": "0.2.0",
+  "description": "Xbox Gamepad plugin for Claude Code — approve tools with A, deny with B, haptic feedback, fighting game combos",
+  "mcpName": "io.github.talkstream/claudepad",
   "type": "module",
   "main": "src/index.ts",
+  "bin": {
+    "claudepad": "bin/claudepad.js"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "scripts/",
+    ".claude-plugin/",
+    ".mcp.json",
+    "com.claudepad.daemon.plist"
+  ],
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
@@ -18,19 +30,32 @@
     "gamepad",
     "xbox",
     "claude",
+    "claude-code",
+    "claude-code-plugin",
     "controller",
-    "haptic"
+    "haptic",
+    "vibe-coding",
+    "model-context-protocol",
+    "sdl2"
   ],
-  "author": "",
+  "author": "talkstream",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talkstream/ClaudePad.git"
+  },
+  "homepage": "https://github.com/talkstream/ClaudePad#readme",
+  "bugs": {
+    "url": "https://github.com/talkstream/ClaudePad/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "sdl2-gamecontroller": "^1.1.2",
+    "tsx": "^4.19.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "tsx": "^4.19.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
   }

@@ -50,4 +50,24 @@ export const DEFAULT_BUTTON_MAP: Partial<Record<ButtonName, ButtonAction>> = {
     keys: ["C-c"],
     description: "Interrupt (Ctrl+C)",
   },
+  guide: {
+    keys: ["/voice", "Enter"],
+    description: "Toggle voice input (/voice)",
+  },
+  leftstick: {
+    keys: ["Tab"],
+    description: "Tab (autocomplete)",
+  },
+  rightstick: {
+    keys: ["/", "Enter"],
+    description: "Slash command menu",
+  },
+  dpleft: {
+    keys: ["Left"],
+    description: "Cursor left",
+  },
+  dpright: {
+    keys: ["Right"],
+    description: "Cursor right",
+  },
 };
