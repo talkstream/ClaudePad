@@ -419,18 +419,8 @@ section:nth-child(even){background:var(--bg-secondary)}
     <p class="section-sub">Every button has a purpose. Here's the full layout.</p>
 
     <div class="controller-diagram reveal">
-      <svg viewBox="0 0 400 105" fill="none" aria-hidden="true" style="max-width:720px">
-        <defs>
-          <style>
-            .bp-label { font: 4.6px monospace; fill: var(--text-muted); }
-            .bp-action { font: 3.8px monospace; fill: var(--accent-cyan); opacity: .85; }
-            .bp-line { stroke: var(--text-muted); stroke-width: .25; opacity: .35; }
-            .bp-dot { opacity: .6; }
-          </style>
-        </defs>
-
-        <!-- Controller body (paths extracted from 360_controller.svg) -->
-        <g transform="translate(77,-11) scale(0.123)">
+      <svg viewBox="0 0 245 95" fill="none" aria-hidden="true" style="max-width:600px;width:100%;margin:0 auto;display:block">
+        <g transform="translate(5,0) scale(0.12)">
           <!-- Main body outline -->
           <path d="m 1541.95,465.9 c 0,0 -45.682,-136.815 -71.429,-174.57 -34.014,-49.878 -85.436,-106.057 -104.71,-113.992 -19.274,-7.935 -81.633,-9.301 -97.506,-2.5 -15.872,6.802 -67.66,53.145 -107.343,64.48 -39.683,11.335 -272.074,5.668 -303.82,1.134 -31.746,-4.534 -47.753,-5.435 -74.964,-23.572 -27.211,-18.137 -40.781,-40.408 -49.852,-44.942 -9.069,-4.534 -75.498,-3.9 -92.505,2.9 -17.007,6.802 -73.429,60.68 -115.379,129.827 -41.95,69.148 -86.697,221.056 -90.971,256.456 -7.937,65.748 -4.134,119.361 -2.134,130.361 2,11 16.959,86.645 72.929,110.19 72.516,30.507 175.672,-32.14 249.496,-61.058 76.927,-30.134 95.033,-27.595 148.73,-27.595 106.576,0 98.615,-1.133 205.216,-1.133 108.843,0 199.412,57.313 249.299,76.583 49.887,19.27 86.436,33.106 134.055,2.5 47.619,-30.606 66.76,-89.285 73.563,-148.231 C 1571.428,583.792 1541.95,465.9 1541.95,465.9 z" fill="var(--bg-card)" stroke="var(--accent-cyan)" stroke-width="5" opacity=".9"/>
           <!-- Left trigger -->
@@ -463,81 +453,6 @@ section:nth-child(even){background:var(--bg-secondary)}
           <!-- Menu button -->
           <rect x="1068" y="453" width="58" height="30" rx="7" fill="none" stroke="var(--accent-cyan)" stroke-width="2.5" opacity=".55"/>
         </g>
-
-        <!-- LEFT LABELS -->
-        <!-- LB -->
-        <line x1="105" y1="22" x2="125" y2="22" class="bp-line"/>
-        <circle cx="125" cy="22" r=".9" fill="var(--accent-cyan)" class="bp-dot"/>
-        <text x="103" y="21" text-anchor="end" class="bp-label">LB</text>
-        <text x="103" y="26" text-anchor="end" class="bp-action">Scroll Up</text>
-        <!-- View -->
-        <line x1="86" y1="47" x2="116" y2="45" class="bp-line"/>
-        <circle cx="116" cy="45" r=".9" fill="var(--accent-cyan)" class="bp-dot"/>
-        <text x="84" y="46" text-anchor="end" class="bp-label">View</text>
-        <text x="84" y="51" text-anchor="end" class="bp-action">Ctrl+C</text>
-        <!-- L3 -->
-        <line x1="86" y1="57" x2="117" y2="54" class="bp-line"/>
-        <circle cx="117" cy="54" r=".9" fill="var(--accent-cyan)" class="bp-dot"/>
-        <text x="84" y="56" text-anchor="end" class="bp-label">L3</text>
-        <text x="84" y="61" text-anchor="end" class="bp-action">Tab</text>
-        <!-- D-pad -->
-        <line x1="86" y1="71" x2="130" y2="70" class="bp-line"/>
-        <circle cx="130" cy="70" r=".9" fill="var(--accent-cyan)" class="bp-dot"/>
-        <text x="84" y="70" text-anchor="end" class="bp-label">D-pad</text>
-        <text x="84" y="75" text-anchor="end" class="bp-action">Navigate</text>
-
-        <!-- TOP LABEL -->
-        <!-- Xbox guide -->
-        <line x1="200" y1="34" x2="200" y2="22" class="bp-line"/>
-        <circle cx="200" cy="34" r=".9" fill="#107C10"/>
-        <text x="200" y="19" text-anchor="middle" class="bp-label">Xbox</text>
-        <text x="200" y="14" text-anchor="middle" class="bp-action">/voice</text>
-
-        <!-- RIGHT LABELS -->
-        <!-- RB -->
-        <line x1="275" y1="22" x2="290" y2="22" class="bp-line"/>
-        <circle cx="275" cy="22" r=".9" fill="var(--accent-cyan)" class="bp-dot"/>
-        <text x="292" y="21" text-anchor="start" class="bp-label">RB</text>
-        <text x="292" y="26" text-anchor="start" class="bp-action">Scroll Down</text>
-        <!-- Y -->
-        <line x1="244" y1="37" x2="274" y2="34" class="bp-line"/>
-        <line x1="274" y1="34" x2="310" y2="34" class="bp-line"/>
-        <circle cx="244" cy="37" r="1" fill="#f1c40f"/>
-        <text x="312" y="33" text-anchor="start" class="bp-label" fill="#f1c40f">Y</text>
-        <text x="312" y="38" text-anchor="start" class="bp-action">Escape</text>
-        <!-- B -->
-        <line x1="256" y1="46" x2="274" y2="46" class="bp-line"/>
-        <line x1="274" y1="46" x2="310" y2="46" class="bp-line"/>
-        <circle cx="256" cy="46" r="1" fill="#e74c3c"/>
-        <text x="312" y="45" text-anchor="start" class="bp-label" fill="#e74c3c">B</text>
-        <text x="312" y="50" text-anchor="start" class="bp-action">Deny</text>
-        <!-- X -->
-        <line x1="232" y1="47" x2="274" y2="57" class="bp-line"/>
-        <line x1="274" y1="57" x2="310" y2="57" class="bp-line"/>
-        <circle cx="232" cy="47" r="1" fill="#0078d4"/>
-        <text x="312" y="56" text-anchor="start" class="bp-label" fill="#0078d4">X</text>
-        <text x="312" y="61" text-anchor="start" class="bp-action">Ctrl+C</text>
-        <!-- A -->
-        <line x1="244" y1="55" x2="274" y2="68" class="bp-line"/>
-        <line x1="274" y1="68" x2="310" y2="68" class="bp-line"/>
-        <circle cx="244" cy="55" r="1" fill="#107C10"/>
-        <text x="312" y="67" text-anchor="start" class="bp-label" fill="#107C10">A</text>
-        <text x="312" y="72" text-anchor="start" class="bp-action">Approve</text>
-        <!-- Menu -->
-        <line x1="212" y1="47" x2="212" y2="80" class="bp-line" opacity=".2"/>
-        <line x1="212" y1="80" x2="310" y2="80" class="bp-line"/>
-        <circle cx="212" cy="47" r=".7" fill="var(--accent-cyan)" opacity=".4"/>
-        <text x="312" y="79" text-anchor="start" class="bp-label">Menu</text>
-        <text x="312" y="84" text-anchor="start" class="bp-action">Enter</text>
-        <!-- R3 -->
-        <line x1="220" y1="74" x2="220" y2="90" class="bp-line" opacity=".2"/>
-        <line x1="220" y1="90" x2="310" y2="90" class="bp-line"/>
-        <circle cx="220" cy="74" r=".7" fill="var(--accent-cyan)" opacity=".4"/>
-        <text x="312" y="89" text-anchor="start" class="bp-label">R3</text>
-        <text x="312" y="94" text-anchor="start" class="bp-action">/</text>
-
-        <!-- Blueprint title -->
-        <text x="200" y="103" text-anchor="middle" fill="var(--text-muted)" font-size="3.5" font-family="monospace" opacity=".35" letter-spacing=".5">CLAUDEPAD CONTROLLER BLUEPRINT</text>
       </svg>
     </div>
 
