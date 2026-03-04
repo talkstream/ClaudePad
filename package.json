@@ -1,6 +1,6 @@
 {
   "name": "claudepad",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Xbox Gamepad plugin for Claude Code — approve tools with A, deny with B, haptic feedback, fighting game combos",
   "mcpName": "io.github.talkstream/claudepad",
   "type": "module",
