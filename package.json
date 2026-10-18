@@ -17,6 +17,7 @@
     "com.claudepad.daemon.plist"
   ],
   "scripts": {
+    "typecheck": "tsc --noEmit --rootDir .",
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
